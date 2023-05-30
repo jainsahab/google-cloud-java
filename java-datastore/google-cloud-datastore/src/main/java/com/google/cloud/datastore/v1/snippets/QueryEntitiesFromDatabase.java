@@ -4,6 +4,7 @@ import com.google.cloud.datastore.v1.DatastoreClient;
 import com.google.datastore.v1.Entity;
 import com.google.datastore.v1.EntityResult;
 import com.google.datastore.v1.Filter;
+import com.google.datastore.v1.KindExpression;
 import com.google.datastore.v1.PartitionId;
 import com.google.datastore.v1.PropertyFilter;
 import com.google.datastore.v1.PropertyFilter.Operator;
@@ -20,17 +21,18 @@ public class QueryEntitiesFromDatabase {
 
   public static void main(String[] args) throws IOException {
     try (DatastoreClient datastoreClient = DatastoreClient.create()) {
-      Query.Builder queryBuilder = Query.newBuilder();
-      queryBuilder.addKindBuilder().setName("Person");
-      queryBuilder.setFilter(
-          Filter.newBuilder()
-              .setPropertyFilter(
-                  PropertyFilter.newBuilder()
-                      .setProperty(PropertyReference.newBuilder().setName("favorite_food").build())
-                      .setOp(Operator.EQUAL)
-                      .setValue(Value.newBuilder().setStringValue("pizza").build())
-                      .build()
-              ).build());
+      Query.Builder queryBuilder = Query.newBuilder()
+          .addKind(KindExpression.newBuilder().setName("Person").build())
+          .setFilter(
+              Filter.newBuilder()
+                  .setPropertyFilter(
+                      PropertyFilter.newBuilder()
+                          .setProperty(
+                              PropertyReference.newBuilder().setName("favorite_food").build())
+                          .setOp(Operator.EQUAL)
+                          .setValue(Value.newBuilder().setStringValue("pizza").build())
+                          .build()
+                  ).build());
       RunQueryRequest request =
           RunQueryRequest.newBuilder()
               .setProjectId("jainsahab-feature-development")

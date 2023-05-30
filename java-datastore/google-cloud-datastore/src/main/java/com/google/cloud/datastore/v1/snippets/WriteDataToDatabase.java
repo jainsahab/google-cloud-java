@@ -19,19 +19,18 @@ public class WriteDataToDatabase {
   public static void main(String[] args) throws IOException {
     String projectId = "jainsahab-feature-development";
 
-    Key.Builder keyBuilder = Key.newBuilder();
-    keyBuilder.setPartitionId(PartitionId.newBuilder().setProjectId(projectId).build());
-    keyBuilder.addPath(PathElement.newBuilder().setKind("Task").setName("sampleTask").build());
+    Key.Builder keyBuilder = Key.newBuilder()
+        .setPartitionId(PartitionId.newBuilder().setProjectId(projectId).build())
+        .addPath(PathElement.newBuilder().setKind("Task").setName("sampleTask").build());
 
-    Entity.Builder entityBuilder = Entity.newBuilder();
-    entityBuilder.setKey(keyBuilder);
-    entityBuilder.putProperties("category", Value.newBuilder().setStringValue("Personal").build());
-    entityBuilder.putProperties("done", Value.newBuilder().setBooleanValue(false).build());
-    entityBuilder.putProperties("priority", Value.newBuilder().setIntegerValue(4).build());
-    entityBuilder.putProperties("description",
-        Value.newBuilder().setStringValue("Learn Cloud Datastore").build());
-    entityBuilder.putProperties("from",
-        Value.newBuilder().setStringValue("gapic generated client").build());
+    Entity.Builder entityBuilder = Entity.newBuilder()
+        .setKey(keyBuilder)
+        .putProperties("category", Value.newBuilder().setStringValue("Personal").build())
+        .putProperties("done", Value.newBuilder().setBooleanValue(false).build())
+        .putProperties("priority", Value.newBuilder().setIntegerValue(4).build())
+        .putProperties("description",
+            Value.newBuilder().setStringValue("Learn Cloud Datastore").build())
+        .putProperties("from", Value.newBuilder().setStringValue("gapic generated client").build());
 
     Mutation insertMutation = Mutation.newBuilder().setUpsert(entityBuilder).build();
 

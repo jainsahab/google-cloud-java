@@ -13,6 +13,7 @@ import com.google.datastore.v1.CommitResponse;
 import com.google.datastore.v1.Entity;
 import com.google.datastore.v1.EntityResult;
 import com.google.datastore.v1.Filter;
+import com.google.datastore.v1.KindExpression;
 import com.google.datastore.v1.PartitionId;
 import com.google.datastore.v1.PropertyFilter;
 import com.google.datastore.v1.PropertyFilter.Operator;
@@ -44,17 +45,18 @@ public class CountAndQueryEntitiesInTransaction {
               .build());
       ByteString transactionId = transactionResponse.getTransaction();
 
-      Query.Builder queryBuilder = Query.newBuilder();
-      queryBuilder.addKindBuilder().setName("Person");
-      queryBuilder.setFilter(
-          Filter.newBuilder()
-              .setPropertyFilter(
-                  PropertyFilter.newBuilder()
-                      .setProperty(PropertyReference.newBuilder().setName("favorite_food").build())
-                      .setOp(Operator.EQUAL)
-                      .setValue(Value.newBuilder().setStringValue("pizza").build())
-                      .build()
-              ).build());
+      Query.Builder queryBuilder = Query.newBuilder()
+          .addKind(KindExpression.newBuilder().setName("Person").build())
+          .setFilter(
+              Filter.newBuilder()
+                  .setPropertyFilter(
+                      PropertyFilter.newBuilder()
+                          .setProperty(
+                              PropertyReference.newBuilder().setName("favorite_food").build())
+                          .setOp(Operator.EQUAL)
+                          .setValue(Value.newBuilder().setStringValue("pizza").build())
+                          .build()
+                  ).build());
 
       AggregationQuery aggregationQuery = AggregationQuery.newBuilder()
           .addAggregations(
@@ -74,7 +76,6 @@ public class CountAndQueryEntitiesInTransaction {
               .setQuery(queryBuilder)
               .build();
 
-
       RunAggregationQueryRequest aggregationQueryRequest =
           RunAggregationQueryRequest.newBuilder()
               .setProjectId(projectId)
@@ -91,8 +92,10 @@ public class CountAndQueryEntitiesInTransaction {
         System.out.println(name + ", you're invited to a pizza party!");
       }
 
-      RunAggregationQueryResponse aggregationQueryResponse = datastoreClient.runAggregationQuery(aggregationQueryRequest);
-      AggregationResult aggregationResult = aggregationQueryResponse.getBatch().getAggregationResultsList().get(0);
+      RunAggregationQueryResponse aggregationQueryResponse = datastoreClient.runAggregationQuery(
+          aggregationQueryRequest);
+      AggregationResult aggregationResult = aggregationQueryResponse.getBatch()
+          .getAggregationResultsList().get(0);
       long numberOfPeople = aggregationResult.getAggregatePropertiesMap().get("number_of_people")
           .getIntegerValue();
       System.out.printf("Total %d people are invited to pizza party.\n", numberOfPeople);
